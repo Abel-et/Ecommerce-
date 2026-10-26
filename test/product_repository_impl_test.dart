@@ -1,9 +1,11 @@
-import 'package:ecommerce/features/products/data/data_sources/local/local_data_source.dart';
-import 'package:ecommerce/features/products/data/model/product_Model.dart';
-import 'package:ecommerce/features/products/data/repository/product_repository_impl.dart';
-import 'package:ecommerce/features/products/domain/entities/product_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+// Go out of 'test/' directory and dive directly into 'lib/'
+import '../lib/features/products/data/data_sources/local/local_data_source.dart';
+import '../lib/features/products/data/model/product_Model.dart';
+import '../lib/features/products/data/repository/product_repository_impl.dart';
+import '../lib/features/products/domain/entities/product_entity.dart';
 
 class MockLocalDataSource extends Mock implements LocalDataSource {}
 
@@ -28,21 +30,18 @@ void main() {
   final tProductEntity = tProductModel.toEntity();
 
   group('getAllProducts', () {
-    test(
-      'should return a list of productEntity when local data source handles successfully',
-      () async {
-        when(() => mockLocalDataSource.getAllProducts())
-            .thenAnswer((_) async => [tProductModel]);
+    test('should return a list of productEntity when local data source handles successfully', () async {
+      when(() => mockLocalDataSource.getAllProducts())
+          .thenAnswer((_) async => [tProductModel]);
 
-        final result = await repository.getAllProducts();
+      final result = await repository.getAllProducts();
 
-        expect(result, isA<List<ProductEntity>>());
-        expect(result.first.productId, equals(tProductEntity.productId));
+      expect(result, isA<List<ProductEntity>>());
+      expect(result.first.productId, equals(tProductEntity.productId));
 
-        verify(() => mockLocalDataSource.getAllProducts()).called(1);
-        verifyNoMoreInteractions(mockLocalDataSource);
-      },
-    );
+      verify(() => mockLocalDataSource.getAllProducts()).called(1);
+      verifyNoMoreInteractions(mockLocalDataSource);
+    });
   });
 
   group('createProduct', () {

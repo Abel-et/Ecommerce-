@@ -15,7 +15,7 @@ class GetProductUseCase{
   final ProductRepository repository; 
   const GetProductUseCase( this.repository);
 
-  Future<ProductEntity> call(String id) async {
+  Future<ProductEntity?> call(String id) async {
     return await repository.getProductById(id);
   }
 }
