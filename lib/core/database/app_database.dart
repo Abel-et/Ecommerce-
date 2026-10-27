@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:ecommerce/features/auth/data/model/user_model.dart';
+import 'package:flutter/rendering.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ecommerce/features/products/data/model/product_Model.dart';
@@ -87,13 +89,50 @@ await db.execute('''
   }
 
 
-  // AUTH /USER REGISTER AND LOGIN 
+  // AUTH /USER REGISTER AND LOGIN
+  // get all users
+  Future<List<UserModel>> getAllUsers() async {
+  final db = await database;
 
-  Future<void> registerUser(Map<String, dynamic> userMap) async{
-    final db = await database;
-    await db.insert('users', userMap, conflictAlgorithm: ConflictAlgorithm.fail);
+  debugPrint('========== SQLITE READ START ==========');
+  debugPrint('READ DATABASE PATH: ${db.path}');
+
+  final maps = await db.query('users');
+
+  debugPrint('READ RESULT COUNT: ${maps.length}');
+
+  return maps.map((row) => UserModel.fromSql(row)).toList();
+}
+
+ Future<void> registerUser(
+  Map<String, dynamic> userMap,
+) async {
+  final db = await database;
+
+  debugPrint('========== SQLITE INSERT START ==========');
+  debugPrint('DATABASE PATH: ${db.path}');
+  debugPrint('TABLE: users');
+  debugPrint('COLUMN NAMES: ${userMap.keys.toList()}');
+
+  try {
+    final id = await db.insert(
+      'users',
+      userMap,
+      conflictAlgorithm: ConflictAlgorithm.fail,
+    );
+
+    debugPrint('INSERT SUCCESS. ID: $id');
+
+    final rows = await db.query('users');
+
+    debugPrint('ROWS IMMEDIATELY AFTER INSERT: ${rows.length}');
+    debugPrint('========== SQLITE INSERT END ==========');
+  } catch (error, stackTrace) {
+    debugPrint('SQLITE INSERT FAILED: $error');
+    // debugPrintStack(stackTrace: stackTrace);
+    rethrow;
   }
-
+}
   Future<Map<String, dynamic>?> loginUser(String email, String password) async{
     final db = await database;
     final res = await db.query(

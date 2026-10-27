@@ -11,7 +11,9 @@ class LoginEvent extends AuthEvent{
     required this.password
   });
 }
-
+class GetAllUsersEvent extends AuthEvent{
+  GetAllUsersEvent();
+}
 
 class RegisterEvent extends AuthEvent{
   final String fullName;

@@ -1,5 +1,6 @@
 import 'package:ecommerce/core/error/failures.dart';
 import 'package:ecommerce/features/auth/data/model/user_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 
 import '../data_sources/local/user_local_data_source.dart';
@@ -32,4 +33,22 @@ class UserRepositoryImpl implements UserRepository{
       return Left(AuthFailure('cause inside repository'));
     }
   }
+
+  @override
+  Future<Either<Failure,List<UserEntity>>> getAllUsers() async{
+    try{
+      
+      final allUser = await localDataSource.getAllUsers();
+      return allUser.map((
+        modelList
+      )=> modelList.map(
+        (model) => model.toEntity()
+      ).toList()
+      );
+      }catch(error)
+{debugPrint('GET ALL USERS ERROR: $error');
+ 
+
+  return Left(DatabaseFailure(error.toString()));
+}  }
 }

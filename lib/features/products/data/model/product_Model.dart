@@ -28,7 +28,7 @@ class ProductModel extends ProductEntity {
       productPrice: (map['price'] as num).toDouble(),
       imageUrl: map['imageUrl'] as String,
       productCategory: map['category'] as String,
-      createdAt: DateTime.parse(map['createdAt'] as String),
+      createdAt: DateTime.parse(map['created_at'] as String),
     );
   }
 
@@ -41,7 +41,7 @@ class ProductModel extends ProductEntity {
       'price': productPrice,
       'imageUrl': imageUrl,
       'category': productCategory,
-      'createdAt': createdAt.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
     };
   }
 
@@ -58,7 +58,7 @@ class ProductModel extends ProductEntity {
     );
   }
 
-  // the data comes from model and conveted to entity (model => Entity)
+  // the data comes from model and converted to entity (model => Entity)
   ProductEntity toEntity() {
     return ProductEntity(
       productId: productId,

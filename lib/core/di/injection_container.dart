@@ -8,6 +8,8 @@ import 'package:ecommerce/features/auth/domain/use_case/user_use_case.dart';
 import 'package:ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ecommerce/features/auth/data/data_sources/local/user_local_data_source.dart';
 import 'package:ecommerce/features/auth/data/data_sources/local/user_local_data_source_impl.dart';
+
+// create instance of GetIt class
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
@@ -42,12 +44,18 @@ Future<void> initDependencies() async {
       () => RegisterUseCase(sl<UserRepository>()),
     );
   }
+  if(!sl.isRegistered<GetAllUsersUseCase>()){
+    sl.registerLazySingleton<GetAllUsersUseCase>(
+      () => GetAllUsersUseCase(sl<UserRepository>()),
+    );
+  }
 
   if (!sl.isRegistered<AuthBloc>()) {
     sl.registerFactory<AuthBloc>(
       () => AuthBloc(
         loginUseCase: sl<LoginUseCase>(),
         registerUseCase: sl<RegisterUseCase>(),
+        getAllUsersUseCase: sl<GetAllUsersUseCase>()
       ),
     );
   }

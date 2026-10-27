@@ -5,5 +5,6 @@ import 'package:fpdart/fpdart.dart';
 
 abstract class UserLocalDataSource {
   Future<Either<Failure, void>> register(UserModel user);
-  Future<Either<Failure,UserModel>> login(String eamil, String password);
-}
+  Future<Either<Failure,UserModel>> login(String email, String password);
+  Future<Either<Failure, List<UserModel>>> getAllUsers();
+  }

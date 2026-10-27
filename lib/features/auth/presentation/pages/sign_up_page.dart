@@ -1,4 +1,6 @@
 
+import 'package:ecommerce/features/auth/domain/entities/user_entity.dart';
+import 'package:ecommerce/features/auth/domain/use_case/user_use_case.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ecommerce/core/routes/app_route.dart';
 import 'package:ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
@@ -51,6 +53,7 @@ class _SignUpPageState extends State<SignUpPage>{
     final String password = passwordController.text;
 
     context.read<AuthBloc>().add(RegisterEvent(fullName: fullName, email: email, password: password));
+    
   }
   @override
   Widget build(BuildContext context){
@@ -71,6 +74,7 @@ class _SignUpPageState extends State<SignUpPage>{
 
     if (state is Authnticated) {
       context.goNamed(AppRoute.home);
+      context.read<AuthBloc>().add(GetAllUsersEvent());
     }
   },
   child: 
@@ -233,7 +237,7 @@ class _SignUpPageState extends State<SignUpPage>{
                           height: 24,
                           width: 24,
                         ),
-                        onPressed: (){}, 
+                        onPressed: (){ }, 
 
                         label: const Text(
                           'Continue with Google',

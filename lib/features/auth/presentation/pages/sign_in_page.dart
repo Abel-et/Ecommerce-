@@ -76,7 +76,7 @@ class _SingInPageState extends State<SingInPage>{
         child: Column(
           children: [
              SizedBox(height: 25,),
-              Text('Well Come Back', style: TextStyle(
+              Text('WelCome Back 👋', style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold
               ),
@@ -187,7 +187,7 @@ class _SingInPageState extends State<SingInPage>{
                       width: double.infinity,
 
                       child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
+                                    style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black87,
                           backgroundColor: Colors.white,
                           side:  const BorderSide(color: Colors.grey, width: 0.8),
@@ -201,7 +201,9 @@ class _SingInPageState extends State<SingInPage>{
                           height: 24,
                           width: 24,
                         ),
-                        onPressed: (){}, 
+                        onPressed: (){
+                          context.read<AuthBloc>().add(GetAllUsersEvent());
+                        }, 
 
                         label: const Text(
                           'Continue with Google',

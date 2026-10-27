@@ -1,4 +1,5 @@
-
+import 'package:ecommerce/features/navigation/presentation/main_shell.dart';
+import 'package:ecommerce/features/products/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ecommerce/features/auth/presentation/pages/sign_up_page.dart';
@@ -7,6 +8,9 @@ class AppRoute {
   static const String splash = 'splash';
   static const String login = 'login';
   static const String home = 'home';
+  static const String cart = 'cart';
+  static const String orders = 'orders';
+  static const String profile = 'profile';
 
   static final GoRouter router = GoRouter(
     initialLocation: '/',
@@ -46,9 +50,24 @@ class AppRoute {
       GoRoute(
         path: '/home',
         name: home,
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('Home page')),
-        ),
+        builder: ((context, state) => const HomePage()),
+      ),
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainShell(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                name: home,
+                builder: ((context, state) => const HomePage()),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
   );
