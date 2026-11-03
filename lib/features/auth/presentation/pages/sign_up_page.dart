@@ -1,12 +1,9 @@
 
-import 'package:ecommerce/features/auth/domain/entities/user_entity.dart';
-import 'package:ecommerce/features/auth/domain/use_case/user_use_case.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ecommerce/core/routes/app_route.dart';
 import 'package:ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:ecommerce/features/auth/presentation/bloc/auth_state.dart';
-import 'package:ecommerce/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -74,7 +71,7 @@ class _SignUpPageState extends State<SignUpPage>{
 
     if (state is Authnticated) {
       context.goNamed(AppRoute.home);
-      context.read<AuthBloc>().add(GetAllUsersEvent());
+      // context.read<AuthBloc>().add(GetAllUsersEvent());
     }
   },
   child: 
@@ -264,7 +261,7 @@ class _SignUpPageState extends State<SignUpPage>{
                           
                         ),
                         TextButton(onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (_)=> SingInPage()));
+                          context.goNamed(AppRoute.login);
                         }, child: Text('Login',style: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: const Color.fromARGB(255, 4, 104, 187)

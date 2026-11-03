@@ -1,8 +1,10 @@
-import 'package:ecommerce/features/navigation/presentation/main_shell.dart';
-import 'package:ecommerce/features/products/presentation/pages/home_page.dart';
+import 'package:ecommerce/core/navigation/main_shell.dart';
+import 'package:ecommerce/features/auth/presentation/pages/sign_in_page.dart';
+import 'package:ecommerce/features/auth/presentation/pages/sign_up_page.dart';
+import 'package:ecommerce/features/products/presentation/pages/cart/cart_page.dart';
+import 'package:ecommerce/features/products/presentation/pages/product_pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ecommerce/features/auth/presentation/pages/sign_up_page.dart';
 
 class AppRoute {
   static const String splash = 'splash';
@@ -11,6 +13,7 @@ class AppRoute {
   static const String cart = 'cart';
   static const String orders = 'orders';
   static const String profile = 'profile';
+  static const String signup = 'signup';
 
   static final GoRouter router = GoRouter(
     initialLocation: '/',
@@ -43,27 +46,49 @@ class AppRoute {
         ),
       ),
       GoRoute(
-        path: '/login',
-        name: login,
-        builder: (context, state) => SignUpPage(),
+        path: '/signup',
+        name: signup,
+        builder: (context, state) => const SignUpPage(),
       ),
       GoRoute(
-        path: '/home',
-        name: home,
-        builder: ((context, state) => const HomePage()),
+        path: '/login',
+        name: login,
+        builder: (context, state) => SingInPage(),
       ),
-
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainShell(navigationShell: navigationShell);
         },
         branches: [
+          // tab 0
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/home',
                 name: home,
-                builder: ((context, state) => const HomePage()),
+                builder: (context, state) => const HomePage(),
+              ),
+            ],
+          ),
+
+          // tab 1, cart
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/cart',// this page has checkout page , success page, 
+                name: cart,
+                builder: (context, state) => const CartPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile', // this page has order history , change information , 
+                name: profile,
+                builder: (context, state) => Scaffold(
+                  body: Center(child: Text('profile Page will Implement soon')),
+                ),
               ),
             ],
           ),

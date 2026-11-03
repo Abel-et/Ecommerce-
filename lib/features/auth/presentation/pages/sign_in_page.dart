@@ -1,7 +1,6 @@
 import 'package:ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ecommerce/features/auth/presentation/bloc/auth_event.dart';
 import 'package:ecommerce/features/auth/presentation/bloc/auth_state.dart';
-import 'package:ecommerce/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -230,7 +229,7 @@ class _SingInPageState extends State<SingInPage>{
                           
                         ),
                         TextButton(onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (_)=> SignUpPage()));
+                           context.goNamed(AppRoute.signup);
                         }, child: Text('SignUp',style: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: const Color.fromARGB(255, 4, 104, 187)

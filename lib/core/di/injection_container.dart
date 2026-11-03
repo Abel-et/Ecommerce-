@@ -1,4 +1,11 @@
 
+import 'package:ecommerce/core/session/user_session.dart';
+import 'package:ecommerce/features/products/data/data_sources/local/local_data_source.dart';
+import 'package:ecommerce/features/products/data/data_sources/local/local_data_source_impl.dart';
+import 'package:ecommerce/features/products/data/repository/product_repository_impl.dart';
+import 'package:ecommerce/features/products/domain/repository/product_repository.dart';
+import 'package:ecommerce/features/products/domain/usecase/product_use_case.dart';
+import 'package:ecommerce/features/products/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:ecommerce/core/database/app_database.dart';
@@ -27,6 +34,12 @@ Future<void> initDependencies() async {
     );
   }
 
+  if(!sl.isRegistered<UserSession>()){
+    sl.registerLazySingleton<UserSession>(
+      () => UserSession(),
+    );
+  }
+
   if (!sl.isRegistered<UserRepository>()) {
     sl.registerLazySingleton<UserRepository>(
       () => UserRepositoryImpl(localDataSource: sl<UserLocalDataSource>()),
@@ -50,6 +63,48 @@ Future<void> initDependencies() async {
     );
   }
 
+  // Product dependencies
+  if(!sl.isRegistered<LocalDataSource>()){
+    sl.registerLazySingleton<LocalDataSource>(
+      () => LocalDataSourceImpl(appDatabase: sl<AppDatabase>())
+    );
+  }
+
+if(!sl.isRegistered<ProductRepository>()){
+  sl.registerLazySingleton<ProductRepository>(
+    ()=> ProductRepositoryImpl(localDataSource: sl<LocalDataSource>())
+  );
+}
+if (!sl.isRegistered<GetAllProductsUseCase>()) {
+  sl.registerLazySingleton<GetAllProductsUseCase>(
+    () => GetAllProductsUseCase(sl<ProductRepository>()),
+  );
+}
+
+if (!sl.isRegistered<GetProductUseCase>()) {
+  sl.registerLazySingleton<GetProductUseCase>(
+    () => GetProductUseCase(sl<ProductRepository>()),
+  );
+}
+
+if (!sl.isRegistered<CreateProductUseCase>()) {
+  sl.registerLazySingleton<CreateProductUseCase>(
+    () => CreateProductUseCase(sl<ProductRepository>()),
+  );
+}
+
+if (!sl.isRegistered<UpdateProductUseCase>()) {
+  sl.registerLazySingleton<UpdateProductUseCase>(
+    () => UpdateProductUseCase(sl<ProductRepository>()),
+  );
+}
+
+if (!sl.isRegistered<DeleteProductUseCase>()) {
+  sl.registerLazySingleton<DeleteProductUseCase>(
+    () => DeleteProductUseCase(sl<ProductRepository>()),
+  );
+}
+
   if (!sl.isRegistered<AuthBloc>()) {
     sl.registerFactory<AuthBloc>(
       () => AuthBloc(
@@ -59,4 +114,13 @@ Future<void> initDependencies() async {
       ),
     );
   }
+
+  sl.registerFactory<ProductBloc>(
+    () => ProductBloc(
+      getAllProductsUseCase: sl<GetAllProductsUseCase>(),
+       getProductUseCase: sl<GetProductUseCase>(),
+        deleteProductUseCase: sl<DeleteProductUseCase>(),
+         createProductUseCase: sl<CreateProductUseCase>(),
+          updateProductUseCase: sl<UpdateProductUseCase>())
+  );
 }

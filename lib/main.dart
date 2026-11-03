@@ -1,5 +1,8 @@
 
 import 'package:ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ecommerce/features/products/presentation/bloc/cart_bloc/cart_bloc.dart';
+import 'package:ecommerce/features/products/presentation/bloc/product_bloc/product_bloc.dart';
+import 'package:ecommerce/features/products/presentation/bloc/product_bloc/product_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,8 +23,17 @@ class CommerceApp extends StatelessWidget {
   static const Color appBackgroundColor = Color(0xFFF8F9FA);
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<AuthBloc>(),
+    return MultiBlocProvider(providers: [
+    BlocProvider(
+      create: (context) => sl<AuthBloc>(),),
+      BlocProvider(create: (context)=>sl<ProductBloc>()
+      ..add(GetAllProductsEvent()),),
+      BlocProvider<CartBloc>(
+        create: (_) => CartBloc(),)
+      
+      
+      ],
+
       child: MaterialApp.router(
         title: 'E-Commerce App',
         debugShowCheckedModeBanner: false,

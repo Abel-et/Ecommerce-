@@ -2,10 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 // Go out of 'test/' directory and dive directly into 'lib/'
-import '../lib/features/products/data/data_sources/local/local_data_source.dart';
-import '../lib/features/products/data/model/product_Model.dart';
-import '../lib/features/products/data/repository/product_repository_impl.dart';
-import '../lib/features/products/domain/entities/product_entity.dart';
+import 'package:ecommerce/features/products/data/data_sources/local/local_data_source.dart';
+import 'package:ecommerce/features/products/data/model/product_Model.dart';
+import 'package:ecommerce/features/products/data/repository/product_repository_impl.dart';
+import 'package:ecommerce/features/products/domain/entities/product_entity.dart';
 
 class MockLocalDataSource extends Mock implements LocalDataSource {}
 

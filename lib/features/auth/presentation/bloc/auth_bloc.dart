@@ -1,4 +1,5 @@
-import 'package:ecommerce/core/error/failures.dart';
+import 'package:ecommerce/core/di/injection_container.dart';
+import 'package:ecommerce/core/session/user_session.dart';
 import 'package:ecommerce/features/auth/domain/entities/user_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -53,6 +54,7 @@ Future<void> _onRegister(
       },
       (_) {
         debugPrint('REGISTER USE CASE RETURNED SUCCESS');
+        sl<UserSession>().setUser(user);
         emit(Authnticated(user));
       },
     );
@@ -74,7 +76,7 @@ Future <void> _onGetUser(
   final getUsers = await getAllUsersUseCase();
 
   getUsers.fold(  
-    (faliure) => print('un able to get  users datat'),
+    (failure) => print('un able to get  users data'),
     (usersEntities) {
       print('.......................AllUsers ........................');
       print('totla users ${usersEntities.length}');
@@ -101,7 +103,10 @@ Future <void> _onGetUser(
 
     result.fold(  
       (failure) => emit(AuthFailureState(message: failure.message)),
-    (ans) => emit(Authnticated(ans)));
+    (ans) {
+      sl<UserSession>().setUser(ans);
+      emit(Authnticated(ans));
+    });
    
     }catch(error){
       emit(AuthFailureState(message: 'Something went Wrong. Pleas try again'));

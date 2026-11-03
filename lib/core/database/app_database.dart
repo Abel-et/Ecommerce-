@@ -127,7 +127,7 @@ await db.execute('''
 
     debugPrint('ROWS IMMEDIATELY AFTER INSERT: ${rows.length}');
     debugPrint('========== SQLITE INSERT END ==========');
-  } catch (error, stackTrace) {
+  } catch (error) {
     debugPrint('SQLITE INSERT FAILED: $error');
     // debugPrintStack(stackTrace: stackTrace);
     rethrow;
@@ -157,7 +157,7 @@ Future<void> insertProduct(ProductModel product) async{
 }
 
 
-// fetch all products oreder by newest creation date
+// fetch all products order by newest creation date
 Future <List<ProductModel>> fetchAllProducts() async{
   final db = await database;
 
