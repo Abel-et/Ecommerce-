@@ -63,6 +63,12 @@ class MainShell extends StatelessWidget {
             ),
             label: 'Cart',
           ),
+          
+           NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long),
+            label: 'Orders',
+          ),
 
           NavigationDestination(
             icon: Icon(Icons.person_outline),

@@ -15,9 +15,11 @@ class _OrderSuccessPageState extends State<OrderSuccessPage> {
   @override
   void initState(){
     super.initState();
-    _redirectTimer =Timer(const Duration(seconds: 5),(){
+    _redirectTimer =Timer(const Duration(seconds: 2),(){
       if(mounted){
+        
         context.goNamed(AppRoute.home);
+
       }
     });
   }
@@ -79,7 +81,6 @@ class _OrderSuccessPageState extends State<OrderSuccessPage> {
                         )
                       ),
                       onPressed: (){
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('This is in progress')));
                     }, child: Text('View Order')),
                   ),
                   SizedBox(height: 14,),

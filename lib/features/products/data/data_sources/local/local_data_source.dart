@@ -1,4 +1,4 @@
-import 'package:ecommerce/features/products/data/model/product_Model.dart';
+import 'package:ecommerce/features/products/data/model/product_model.dart';
 
 abstract class LocalDataSource {
   Future<List<ProductModel>> getAllProducts(); 

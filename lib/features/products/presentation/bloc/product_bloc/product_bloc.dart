@@ -1,4 +1,4 @@
-import 'package:ecommerce/features/products/data/model/product_Model.dart';
+import 'package:ecommerce/features/products/data/model/product_model.dart';
 import 'package:ecommerce/features/products/domain/entities/product_entity.dart';
 // import 'package:ecommerce/features/products/domain/entities/product_entity.dart';
 import 'package:ecommerce/features/products/domain/usecase/product_use_case.dart';

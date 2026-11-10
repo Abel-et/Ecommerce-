@@ -1,8 +1,8 @@
+import 'package:ecommerce/core/routes/app_route.dart';
 import 'package:ecommerce/features/auth/domain/entities/user_entity.dart';
+import 'package:ecommerce/features/orders/domain/entity/order_items.dart';
 import 'package:ecommerce/features/products/presentation/bloc/cart_bloc/cart_bloc.dart';
 import 'package:ecommerce/features/products/presentation/bloc/cart_bloc/cart_event.dart';
-import 'package:ecommerce/features/products/presentation/bloc/cart_bloc/cart_state.dart';
-import 'package:ecommerce/features/products/presentation/pages/cart/order_success_page.dart';
 import 'package:ecommerce/features/products/presentation/widget/checkout/checkout_button.dart';
 import 'package:ecommerce/features/products/presentation/widget/checkout/order_summary_section.dart';
 import 'package:ecommerce/features/products/presentation/widget/checkout/payment_details_field.dart';
@@ -10,7 +10,12 @@ import 'package:ecommerce/features/products/presentation/widget/checkout/payment
 import 'package:ecommerce/features/products/presentation/widget/checkout/shipping_address_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:ecommerce/features/orders/domain/entity/order_entity.dart';
+import 'package:ecommerce/features/orders/presentation/bloc/order_bloc.dart';
+import 'package:ecommerce/features/orders/presentation/bloc/order_event.dart';
+import 'package:ecommerce/features/orders/presentation/bloc/order_state.dart';
+import 'package:uuid/uuid.dart';
 
 class CheckoutPage extends StatefulWidget {
   final UserEntity currentUser;
@@ -28,7 +33,48 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String _payMethod = 'telebirr';
   final _paymentController = TextEditingController();
 
+  final Uuid _uuid = const Uuid();
+  void _placeOrder(){
+    if(_formKey.currentState?.validate() !=true){
+      return;
+    }
 
+    final orderBloc = context.read<OrderBloc>();
+    if(orderBloc.state.createStatus == OrderCreateStatus.loading){
+      return;
+    }
+
+    final cartState = context.read<CartBloc>().state;
+    final cartItems = cartState.items;
+
+    if(cartItems.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Your cart is empty')),
+    );
+    return;
+    }
+
+    final orderItems = cartItems.map((cartItem){
+      return OrderItems(id: _uuid.v4(), 
+      productId: cartItem.product.productId, 
+      quantity: cartItem.quantity, 
+      priceAtPurchase: cartItem.product.productPrice);
+    }).toList();
+
+    final totalAmount = orderItems.fold<double>( 
+      0, (sum, item) => sum + item.totalRowPrice
+    );
+
+
+    final order = OrderEntity(id: _uuid.v4(), 
+    userId: widget.currentUser.id, 
+    totalAmount: totalAmount, 
+    status: OrderStatus.pending, 
+    createdAt: DateTime.now(), 
+    items: orderItems);
+
+    orderBloc.add(CreateOrderEvent(order));
+  }
   @override
   void dispose(){
     _paymentController.dispose();
@@ -36,7 +82,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<OrderBloc,OrderState>(
+      listenWhen: (previous, current) => previous.createStatus != current.createStatus,
+      listener: (context,state ){
+        if(state.createStatus == OrderCreateStatus.success){
+          context.read<CartBloc>().add(ClearCartEvent());
+          context.read<OrderBloc>().add(ResetCreateStatusEvent());
+
+          context.pushReplacement(AppRoute.orderSuccess);
+        }
+
+        if(state.createStatus == OrderCreateStatus.failure){
+          ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              state.createErrorMessage ?? 'Order creation failed',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      
+        }},
+    child: Scaffold(
       body: CustomScrollView(
         slivers: [
           const SliverAppBar(
@@ -69,10 +136,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         const SizedBox(height: 24,),
                         const OrderSummarySection(),
                         const SizedBox(height: 24,),
-                        CheckoutButton(paymentMethod: _payMethod, onPressed: (){
-                      context.read<CartBloc>().add(ClearCartEvent());
-                        _submitOreder();
-                        })
+                        CheckoutButton(paymentMethod: _payMethod, onPressed: _placeOrder)
                     ],
                   ),
                 )
@@ -84,11 +148,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
           )
         ],
       ),
-    );
+    )
+      );
   }
-  void _submitOreder(){
-    
-    Navigator.push(context, MaterialPageRoute(builder: (_)=> OrderSuccessPage()));
-  }}
+ 
 
 
+}
+
+/**
+ * here we have*
+ *  1. product entity,
+ *  2. user entity ,flutt
+ */

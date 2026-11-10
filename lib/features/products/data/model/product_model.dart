@@ -20,30 +20,29 @@ class ProductModel extends ProductEntity {
   });
 
   //   this is the data comes from (Sql => to Model)
-  factory ProductModel.formSql(Map<String, dynamic> map) {
-    return ProductModel(
-      productId: (map['id'] as String),
-      productName: map['name'] as String,
-      productDescription: map['description'] as String,
-      productPrice: (map['price'] as num).toDouble(),
-      imageUrl: map['imageUrl'] as String,
-      productCategory: map['category'] as String,
-      createdAt: DateTime.parse(map['created_at'] as String),
-    );
-  }
-
+factory ProductModel.formSql(Map<String, dynamic> map) {
+  return ProductModel(
+    productId: map['id'],
+    productName: map['name'],
+    productDescription: map['description'],
+    productPrice: (map['price'] as num).toDouble(),
+    imageUrl: map['image_url'],
+    productCategory: map['category'],
+    createdAt: DateTime.parse(map['created_at']),
+  );
+}
   // the data comes from (model => sql)
-  Map<String, dynamic> toSql() {
-    return {
-      'id': productId,
-      'name': productName,
-      'description': productDescription,
-      'price': productPrice,
-      'imageUrl': imageUrl,
-      'category': productCategory,
-      'created_at': createdAt.toIso8601String(),
-    };
-  }
+ Map<String, dynamic> toSql() {
+  return {
+    'id': productId,
+    'name': productName,
+    'description': productDescription,
+    'price': productPrice,
+    'image_url': imageUrl,
+    'category': productCategory,
+    'created_at': createdAt.toIso8601String(),
+  };
+}
 
   // the data comes from entity and convet to model (Entity => model)
   factory ProductModel.fromEntity(ProductEntity product) {

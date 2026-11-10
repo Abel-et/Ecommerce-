@@ -6,39 +6,41 @@ class PaymentMethodSection extends StatelessWidget {
   const PaymentMethodSection({
     super.key,
     required this.selectedMethod,
-    required this.onChanged});
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final methods  = [
-      
-        ('telebirr', 'TeleBirr'),
-        ('cbe' , 'CBE'),
-        ("cash", 'Cash on Delivery')
-      
+    final methods = [
+      ('telebirr', 'TeleBirr'),
+      ('cbe', 'CBE'),
+      ('cash', 'Cash on Delivery'),
     ];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(  
-          'Payment Method',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold
+
+    return RadioGroup<String>(
+      groupValue: selectedMethod,
+      onChanged: (value) {
+        if (value != null) onChanged(value);
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Payment Method',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        ...methods.map((method){
-          return RadioListTile<String>(  
-            value: method.$1,
-            groupValue: selectedMethod,
-            onChanged: (value){
-              if(value != null) onChanged(value);
-            },
-            title: Text(method.$2),
-            contentPadding: EdgeInsets.zero,
-          );
-        })
-      ],
+          ...methods.map((method) {
+            return RadioListTile<String>(
+              value: method.$1,
+              title: Text(method.$2),
+              contentPadding: EdgeInsets.zero,
+            );
+          }),
+        ],
+      ),
     );
   }
 }

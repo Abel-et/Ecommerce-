@@ -1,5 +1,11 @@
 
 import 'package:ecommerce/core/session/user_session.dart';
+import 'package:ecommerce/features/orders/data/data_source/local/local_data_source.dart';
+import 'package:ecommerce/features/orders/data/data_source/local/local_data_source_impl.dart';
+import 'package:ecommerce/features/orders/data/repository/order_repository_impl.dart';
+import 'package:ecommerce/features/orders/domain/repository/order_repository.dart';
+import 'package:ecommerce/features/orders/domain/use_case/order_use_case.dart';
+import 'package:ecommerce/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:ecommerce/features/products/data/data_sources/local/local_data_source.dart';
 import 'package:ecommerce/features/products/data/data_sources/local/local_data_source_impl.dart';
 import 'package:ecommerce/features/products/data/repository/product_repository_impl.dart';
@@ -62,6 +68,38 @@ Future<void> initDependencies() async {
       () => GetAllUsersUseCase(sl<UserRepository>()),
     );
   }
+
+  // ** ORDER DEPENDENCIES
+  if(!sl.isRegistered<OrderLocalDataSource>()){
+    sl.registerLazySingleton<OrderLocalDataSource>(
+      () => OrderLocalDataSourceImpl(appDatabase: sl<AppDatabase>())
+    );
+  }
+
+  if(!sl.isRegistered<OrderRepository>()){
+    sl.registerLazySingleton<OrderRepository>(
+      () => OrderRepositoryImpl(localDataSource: sl<OrderLocalDataSource>())
+    );
+  }
+
+  if(!sl.isRegistered<CreateOrderUseCase>()){
+    sl.registerLazySingleton<CreateOrderUseCase>(
+      () => CreateOrderUseCase(repository: sl<OrderRepository>())
+    );
+  }
+
+  if(!sl.isRegistered< GetAllOrdersUseCase>()){
+    sl.registerLazySingleton<GetAllOrdersUseCase>(
+    () => GetAllOrdersUseCase(repository: sl<OrderRepository>())
+    );
+  }
+  sl.registerFactory(
+  () => OrderBloc(
+    createOrderUseCase: sl<CreateOrderUseCase>(),
+    getAllOrdersUseCase: sl<GetAllOrdersUseCase>(),
+  ),
+);
+
 
   // Product dependencies
   if(!sl.isRegistered<LocalDataSource>()){

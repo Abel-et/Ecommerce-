@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:ecommerce/features/auth/data/model/user_model.dart';
+import 'package:ecommerce/features/orders/data/model/order_item_model.dart';
+import 'package:ecommerce/features/orders/data/model/order_model.dart';
 import 'package:flutter/rendering.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:ecommerce/features/products/data/model/product_Model.dart';
+import 'package:ecommerce/features/products/data/model/product_model.dart';
 
 class AppDatabase {
   // singleton pattern (single point of entry)
@@ -133,6 +135,7 @@ await db.execute('''
     rethrow;
   }
 }
+  
   Future<Map<String, dynamic>?> loginUser(String email, String password) async{
     final db = await database;
     final res = await db.query(
@@ -145,8 +148,23 @@ await db.execute('''
 
 
 
-// for products operations
+// ** for products operations
 
+Future<void> seedProducts(List<ProductModel> products) async {
+  final db = await database;
+
+  final batch = db.batch();
+
+  for (final product in products) {
+    batch.insert(
+      'products',
+      product.toSql(),
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+  }
+
+  await batch.commit(noResult: true);
+}
 // 1 create product 
 Future<void> insertProduct(ProductModel product) async{
   final db = await database;
@@ -201,5 +219,55 @@ Future close() async{
   db.close();
 }
 
+
+
+// ** Order feature  
+Future <void> createOrder(OrderModel order) async          {
+
+  final db = await database;
+  await db.transaction((txn) async{
+    await txn.insert('orders', 
+    order.toDbMap(),
+    conflictAlgorithm: ConflictAlgorithm.fail);
+
+     for (final item in order.items){
+      final itemModel = item as OrderItemModel;
+      await txn.insert(
+        'order_items', 
+        itemModel.toDbMap(order.id),
+        conflictAlgorithm: ConflictAlgorithm.fail);
+  }
+  });
+}
+Future<List<OrderModel>> getAllOrders() async {
+  final db = await database;
+
+  final orderMaps = await db.query(
+    'orders',
+    orderBy: 'created_at DESC',
+  );
+
+  if (orderMaps.isEmpty) return [];
+
+  final List<OrderModel> completeOrders = [];
+
+  for (final orderMap in orderMaps) {
+    final String orderId = orderMap['id'] as String;
+
+    final itemMaps = await db.query(
+      'order_items',
+      where: 'order_id = ?',
+      whereArgs: [orderId],
+    );
+
+    final fullOrder = OrderModel.fromSql(
+      orderMap,
+      itemMaps,
+    );
+
+    completeOrders.add(fullOrder);
   }
 
+  return completeOrders;
+}
+}

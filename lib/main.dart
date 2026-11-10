@@ -1,5 +1,6 @@
 
 import 'package:ecommerce/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ecommerce/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:ecommerce/features/products/presentation/bloc/cart_bloc/cart_bloc.dart';
 import 'package:ecommerce/features/products/presentation/bloc/product_bloc/product_bloc.dart';
 import 'package:ecommerce/features/products/presentation/bloc/product_bloc/product_event.dart';
@@ -13,6 +14,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await initDependencies();
+  //   await AppDatabase.instance.seedProducts(
+  //   ProductFakeData.products,
+  // );
+
 
   runApp(const CommerceApp());
 }
@@ -29,7 +34,10 @@ class CommerceApp extends StatelessWidget {
       BlocProvider(create: (context)=>sl<ProductBloc>()
       ..add(GetAllProductsEvent()),),
       BlocProvider<CartBloc>(
-        create: (_) => CartBloc(),)
+        create: (_) => CartBloc(),),
+          BlocProvider<OrderBloc>(
+      create: (context) => sl<OrderBloc>(),
+    ),
       
       
       ],

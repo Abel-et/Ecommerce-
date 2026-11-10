@@ -1,9 +1,10 @@
+import 'package:ecommerce/core/routes/app_route.dart';
 import 'package:ecommerce/features/products/domain/entities/product_entity.dart';
 import 'package:ecommerce/features/products/presentation/bloc/cart_bloc/cart_bloc.dart';
 import 'package:ecommerce/features/products/presentation/bloc/cart_bloc/cart_event.dart';
-import 'package:ecommerce/features/products/presentation/pages/product_pages/product_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductEntity product;
@@ -19,12 +20,13 @@ class ProductCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ProductDetailPage(product: product),
-            ),
-          );
+         context.pushNamed(
+          AppRoute.productDetails,
+          pathParameters: {
+            'productId': product.productId
+          },
+          extra: product
+         );
         },
 
         child: Column(

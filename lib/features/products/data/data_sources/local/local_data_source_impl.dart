@@ -1,6 +1,6 @@
 import 'package:ecommerce/core/database/app_database.dart';
 import 'local_data_source.dart';
-import 'package:ecommerce/features/products/data/model/product_Model.dart';
+import 'package:ecommerce/features/products/data/model/product_model.dart';
 
 
 

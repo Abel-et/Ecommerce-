@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 
 // Go out of 'test/' directory and dive directly into 'lib/'
 import 'package:ecommerce/features/products/data/data_sources/local/local_data_source.dart';
-import 'package:ecommerce/features/products/data/model/product_Model.dart';
+import 'package:ecommerce/features/products/data/model/product_model.dart';
 import 'package:ecommerce/features/products/data/repository/product_repository_impl.dart';
 import 'package:ecommerce/features/products/domain/entities/product_entity.dart';
 

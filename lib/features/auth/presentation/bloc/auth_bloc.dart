@@ -76,20 +76,8 @@ Future <void> _onGetUser(
   final getUsers = await getAllUsersUseCase();
 
   getUsers.fold(  
-    (failure) => print('un able to get  users data'),
-    (usersEntities) {
-      print('.......................AllUsers ........................');
-      print('totla users ${usersEntities.length}');
-      for(UserEntity user in usersEntities){
-        print('Full Name : ${user.fullName}');
-        print("Email : ${user.email}");
-        print('password : ${user.password}');
-
-
-        print('................... another User ...........................');
-      }
-
-    }
+    (failure) => debugPrint('the user fetching is not working well '),
+    (usersEntities) { }
   );
 }
   Future<void> _onLogin(  

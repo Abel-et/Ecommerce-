@@ -1,15 +1,16 @@
+import 'package:ecommerce/core/routes/app_route.dart';
 import 'package:ecommerce/core/session/user_session.dart';
-import 'package:ecommerce/features/products/presentation/pages/cart/checkout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../bloc/cart_bloc/cart_bloc.dart';
 import '../../bloc/cart_bloc/cart_event.dart';
 import '../../bloc/cart_bloc/cart_state.dart';
 
-
 final sl = GetIt.instance;
+
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
@@ -25,17 +26,11 @@ class CartPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.shopping_cart_outlined,
-                  size: 80,
-                ),
+                Icon(Icons.shopping_cart_outlined, size: 80),
                 SizedBox(height: 16),
                 Text(
                   'Your cart is empty',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
                 Text('Add a product to get started.'),
@@ -45,29 +40,24 @@ class CartPage extends StatelessWidget {
         }
 
         // Cart containing products.
-        return
-         Scaffold(
+        return Scaffold(
           appBar: AppBar(
-            title:   Text(
-                    'Your Cart (${state.totalQuantity})',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-          ),),
-           body: Column(
+            title: Text(
+              'Your Cart (${state.totalQuantity})',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+          body: Column(
             children: [
-       
               // Product list.
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   itemCount: state.items.length,
-                  separatorBuilder: (_, _) =>
-                      const SizedBox(height: 8),
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final item = state.items[index];
-           
+
                     return Card(
                       child: Padding(
                         padding: const EdgeInsets.all(10),
@@ -93,14 +83,13 @@ class CartPage extends StatelessWidget {
                                 },
                               ),
                             ),
-           
+
                             const SizedBox(width: 12),
-           
+
                             // Product information and quantity controls.
                             Expanded(
                               child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     item.product.productName,
@@ -112,15 +101,13 @@ class CartPage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                "${ _money(
-                                    item.product.productPrice)} ETB"
+                                    "${_money(item.product.productPrice)} ETB",
                                   ),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       IconButton(
-                                        visualDensity:
-                                            VisualDensity.compact,
+                                        visualDensity: VisualDensity.compact,
                                         onPressed: () {
                                           context.read<CartBloc>().add(
                                             DecreaseQuantity(
@@ -134,8 +121,7 @@ class CartPage extends StatelessWidget {
                                       ),
                                       Text('${item.quantity}'),
                                       IconButton(
-                                        visualDensity:
-                                            VisualDensity.compact,
+                                        visualDensity: VisualDensity.compact,
                                         onPressed: () {
                                           context.read<CartBloc>().add(
                                             IncreaseQuantity(
@@ -152,15 +138,13 @@ class CartPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-           
+
                             // Remove the product.
                             IconButton(
                               tooltip: 'Remove product',
                               onPressed: () {
                                 context.read<CartBloc>().add(
-                                  RemoveFromCart(
-                                    item.product.productId,
-                                  ),
+                                  RemoveFromCart(item.product.productId),
                                 );
                               },
                               icon: const Icon(
@@ -175,17 +159,15 @@ class CartPage extends StatelessWidget {
                   },
                 ),
               ),
-           
+
               // Order summary.
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color:Colors.white,
+                  color: Colors.white,
                   border: Border(
-                    top: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                    ),
+                    top: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                 ),
                 child: Column(
@@ -206,40 +188,41 @@ class CartPage extends StatelessWidget {
                       bold: true,
                     ),
                     const SizedBox(height: 16),
-           
+
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        style:  ElevatedButton.styleFrom(
+                        style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.black87
+                          backgroundColor: Colors.black87,
                         ),
                         onPressed: () {
                           final user = sl<UserSession>().currentUser;
-                         if(user == null){
-                              ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please log in to continue to checkout.')),
-    );
+                          if (user == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please log in to continue to checkout.',
+                                ),
+                              ),
+                            );
                             return;
                           }
-                        Navigator.push(context, MaterialPageRoute(builder: (_)=>
-                          CheckoutPage(
-                            currentUser : user,
-                           
-                          )));
+                         context.pushNamed(
+                          AppRoute.checkout,
+                          extra: user
+                         );
                         },
-                        child: Text(
-                          'Checkout - ${_money(state.total)}',
-                        ),
+                        child: Text('Checkout - ${_money(state.total)}'),
                       ),
                     ),
                   ],
                 ),
               ),
             ],
-                   ),
-         );
+          ),
+        );
       },
     );
   }
