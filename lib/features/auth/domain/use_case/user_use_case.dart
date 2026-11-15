@@ -8,29 +8,38 @@ class RegisterUseCase {
 
   const RegisterUseCase(this.repository);
 
-  Future<Either<Failure, void>> call(UserEntity user) async{
+  Future<Either<Failure, void>> call(UserEntity user) async {
     return await repository.signUp(user);
   }
-
-
 }
 
-
-class LoginUseCase{ 
+class LoginUseCase {
   final UserRepository repository;
 
   LoginUseCase(this.repository);
-  Future<Either<Failure,UserEntity>> call(String email, String password) async{
+  Future<Either<Failure, UserEntity>> call(
+    String email,
+    String password,
+  ) async {
     return await repository.signIn(email, password);
   }
 }
 
-
-class GetAllUsersUseCase{
+class GetAllUsersUseCase {
   final UserRepository repository;
 
   GetAllUsersUseCase(this.repository);
-  Future<Either<Failure,List<UserEntity>>> call() async{
+  Future<Either<Failure, List<UserEntity>>> call() async {
     return await repository.getAllUsers();
+  }
+}
+
+class UpdateUserUseCase {
+  final UserRepository repository;
+
+  UpdateUserUseCase(this.repository);
+
+  Future<Either<Failure, void>> call(UserEntity user) {
+    return repository.updateUser(user);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:ecommerce/features/auth/domain/entities/user_entity.dart';
+import 'package:ecommerce/features/auth/domain/entities/user_image_entity.dart';
 
 class UserModel extends UserEntity {
   UserModel({
@@ -7,6 +8,7 @@ class UserModel extends UserEntity {
     required super.email,
     required super.password,
     required super.createdAt,
+    super.profileImage,
   });
 
   // when data comes form sql and conveted to model (sql => model)
@@ -17,6 +19,9 @@ class UserModel extends UserEntity {
       email: map['email'] as String,
       password: map['password_hash'] as String,
       createdAt: DateTime.parse(map['created_at'] as String),
+      profileImage: map['profile_image_path'] == null
+          ? null
+          : UserImageEntity(path: map['profile_image_path'] as String),
     );
   }
 
@@ -28,6 +33,7 @@ class UserModel extends UserEntity {
       'email': email,
       'password_hash': password,
       'created_at': createdAt.toIso8601String(),
+      'profile_image_path': profileImage?.path,
     };
   }
 
@@ -39,6 +45,7 @@ class UserModel extends UserEntity {
       email: user.email,
       password: user.password,
       createdAt: user.createdAt,
+      profileImage: user.profileImage,
     );
   }
 
@@ -50,6 +57,7 @@ class UserModel extends UserEntity {
       password: password,
       email: email,
       createdAt: createdAt,
+      profileImage: profileImage,
     );
   }
 }

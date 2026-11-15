@@ -2,6 +2,7 @@ import 'package:ecommerce/core/navigation/main_shell.dart';
 import 'package:ecommerce/features/auth/domain/entities/user_entity.dart';
 import 'package:ecommerce/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:ecommerce/features/auth/presentation/pages/sign_up_page.dart';
+import 'package:ecommerce/features/auth/presentation/pages/profile_page.dart';
 import 'package:ecommerce/features/orders/presentation/pages/orders_page.dart';
 import 'package:ecommerce/features/products/domain/entities/product_entity.dart';
 import 'package:ecommerce/features/products/presentation/pages/cart/cart_page.dart';
@@ -133,9 +134,7 @@ class AppRoute {
               GoRoute(
                 path: '/profile', // this page has order history , change information ,
                 name: profile,
-                builder: (context, state) => Scaffold(
-                  body: Center(child: Text('profile Page will Implement soon')),
-                ),
+                builder: (context, state) => const ProfilePage(),
               ),
             ],
           ),

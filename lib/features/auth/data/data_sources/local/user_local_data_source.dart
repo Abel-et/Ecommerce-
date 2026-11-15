@@ -7,4 +7,5 @@ abstract class UserLocalDataSource {
   Future<Either<Failure, void>> register(UserModel user);
   Future<Either<Failure,UserModel>> login(String email, String password);
   Future<Either<Failure, List<UserModel>>> getAllUsers();
+  Future<Either<Failure, void>> updateUser(UserModel user);
   }

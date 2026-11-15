@@ -11,4 +11,5 @@ abstract class UserRepository {
 
   // get all users that have an account
   Future<Either<Failure, List<UserEntity>>> getAllUsers();
+  Future<Either<Failure, void>> updateUser(UserEntity user);
 }

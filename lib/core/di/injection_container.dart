@@ -1,5 +1,6 @@
 
 import 'package:ecommerce/core/session/user_session.dart';
+import 'package:ecommerce/core/settings/app_settings.dart';
 import 'package:ecommerce/features/orders/data/data_source/local/local_data_source.dart';
 import 'package:ecommerce/features/orders/data/data_source/local/local_data_source_impl.dart';
 import 'package:ecommerce/features/orders/data/repository/order_repository_impl.dart';
@@ -46,6 +47,10 @@ Future<void> initDependencies() async {
     );
   }
 
+  if (!sl.isRegistered<AppSettings>()) {
+    sl.registerSingleton<AppSettings>(AppSettings());
+  }
+
   if (!sl.isRegistered<UserRepository>()) {
     sl.registerLazySingleton<UserRepository>(
       () => UserRepositoryImpl(localDataSource: sl<UserLocalDataSource>()),
@@ -66,6 +71,11 @@ Future<void> initDependencies() async {
   if(!sl.isRegistered<GetAllUsersUseCase>()){
     sl.registerLazySingleton<GetAllUsersUseCase>(
       () => GetAllUsersUseCase(sl<UserRepository>()),
+    );
+  }
+  if (!sl.isRegistered<UpdateUserUseCase>()) {
+    sl.registerLazySingleton<UpdateUserUseCase>(
+      () => UpdateUserUseCase(sl<UserRepository>()),
     );
   }
 
@@ -97,6 +107,7 @@ Future<void> initDependencies() async {
   () => OrderBloc(
     createOrderUseCase: sl<CreateOrderUseCase>(),
     getAllOrdersUseCase: sl<GetAllOrdersUseCase>(),
+    userSession: sl<UserSession>(),
   ),
 );
 

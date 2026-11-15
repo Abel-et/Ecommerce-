@@ -2,15 +2,19 @@ import 'package:ecommerce/features/orders/domain/entity/order_entity.dart';
 import 'package:ecommerce/features/orders/domain/use_case/order_use_case.dart';
 import 'package:ecommerce/features/orders/presentation/bloc/order_event.dart';
 import 'package:ecommerce/features/orders/presentation/bloc/order_state.dart';
+import 'package:ecommerce/core/session/user_session.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final CreateOrderUseCase createOrderUseCase;
   final GetAllOrdersUseCase getAllOrdersUseCase;
+  final UserSession userSession;
 
   OrderBloc({
     required this.createOrderUseCase,
     required this.getAllOrdersUseCase,
+    required this.userSession,
   }) : super(OrderState.initial()) {
     // Register all combined event handlers
     on<GetAllOrdersEvent>(_onGetAllOrders);
@@ -27,7 +31,12 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   ) async {
     emit(state.copyWith(fetchStatus: OrderFetchStatus.loading));
     try {
-      final orders = await getAllOrdersUseCase() ??[];
+      final userId = userSession.currentUser?.id;
+      if (userId == null) {
+        throw Exception('You must be signed in to view orders.');
+      }
+
+      final orders = await getAllOrdersUseCase(userId);
       
       emit(state.copyWith(
         fetchStatus: OrderFetchStatus.success,
@@ -35,12 +44,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         // Apply existing filters to the freshly loaded data
         visibleOrders: _applyFilters(orders, state.query, state.selectedStatus),
       ));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('LOAD ORDERS FAILED: $e');
+      debugPrintStack(stackTrace: stackTrace);
       emit(state.copyWith(
         fetchStatus: OrderFetchStatus.failure,
-        fetchErrorMessage: e.toString().replaceAll('Exception: ', ''),
+        fetchErrorMessage: _formatError(e),
       ));
     }
+  }
+
+  String _formatError(Object error) {
+    final message = error.toString().replaceFirst('Exception: ', '');
+    return message.isEmpty ? 'Failed to load orders.' : message;
   }
 
   /// 2. CREATE A NEW ORDER

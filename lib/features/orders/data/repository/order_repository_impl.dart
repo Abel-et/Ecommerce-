@@ -27,9 +27,9 @@ class OrderRepositoryImpl implements OrderRepository{
 
 
   @override
-  Future<List<OrderEntity>?> getAllOrders() async{
+  Future<List<OrderEntity>> getAllOrders(String userId) async{
     try{
-      final List<OrderModel>? orderModel = await localDataSource.getAllOrders();
+      final List<OrderModel> orderModel = await localDataSource.getAllOrders(userId);
     return orderModel;
     }catch(e){
       throw Exception('Failed to fetch all order form database $e');

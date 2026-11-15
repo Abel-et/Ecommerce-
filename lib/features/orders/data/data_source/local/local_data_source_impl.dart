@@ -16,8 +16,8 @@ class OrderLocalDataSourceImpl implements OrderLocalDataSource{
   }
 
   @override
-  Future<List<OrderModel>?> getAllOrders() async { 
-    final allOrder = await appDatabase.getAllOrders();
+  Future<List<OrderModel>> getAllOrders(String userId) async {
+    final allOrder = await appDatabase.getAllOrders(userId);
 
     return allOrder;
   }

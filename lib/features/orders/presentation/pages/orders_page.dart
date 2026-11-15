@@ -1,11 +1,15 @@
-
+import 'package:ecommerce/core/di/injection_container.dart';
+import 'package:ecommerce/core/routes/app_route.dart';
+import 'package:ecommerce/core/session/user_session.dart';
 import 'package:ecommerce/features/orders/domain/entity/order_entity.dart';
 import 'package:ecommerce/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:ecommerce/features/orders/presentation/bloc/order_event.dart';
 import 'package:ecommerce/features/orders/presentation/bloc/order_state.dart';
+import 'package:ecommerce/features/products/presentation/widget/category_chips.dart';
 import 'package:ecommerce/features/products/presentation/widget/orders/order_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -18,6 +22,15 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   void initState() {
     super.initState();
+
+    if (sl<UserSession>().currentUser == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.goNamed(AppRoute.login);
+        }
+      });
+      return;
+    }
 
     // Fetch orders when this page is initialized.
     context.read<OrderBloc>().add(GetAllOrdersEvent());
@@ -35,10 +48,7 @@ class _OrdersPageState extends State<OrdersPage> {
               alignment: Alignment.centerLeft,
               child: Text(
                 'My Orders',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -48,9 +58,7 @@ class _OrdersPageState extends State<OrdersPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
               onChanged: (query) {
-                context.read<OrderBloc>().add(
-                  SearchOrdersEvent(query),
-                );
+                context.read<OrderBloc>().add(SearchOrdersEvent(query));
               },
               decoration: InputDecoration(
                 hintText: 'Search by order ID...',
@@ -65,45 +73,39 @@ class _OrdersPageState extends State<OrdersPage> {
           const SizedBox(height: 12),
 
           // Status filter
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: BlocSelector<OrderBloc, OrderState, String>(
-              selector: (state) => state.selectedStatus,
-              builder: (context, selectedStatus) {
-                return DropdownButtonFormField<String>(
-                  initialValue: selectedStatus,
-                  decoration: const InputDecoration(
-                    labelText: 'Filter by status',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'All',
-                      child: Text('All Orders'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Pending',
-                      child: Text('Pending'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Processing',
-                      child: Text('Processing'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Completed',
-                      child: Text('Completed'),
-                    ),
-                  ],
-                  onChanged: (status) {
-                    if (status != null) {
-                      context.read<OrderBloc>().add(
-                        FilterOrdersStatusEvent(status),
-                      );
-                    }
+          BlocSelector<OrderBloc, OrderState, String>(
+            selector: (state) => state.selectedStatus,
+            builder: (context, selectedStatus) {
+              const statuses = [
+                ('All', 'All Orders'),
+                ('Pending', 'Pending'),
+                ('Processing', 'Processing'),
+                ('Completed', 'Completed'),
+              ];
+
+              return SizedBox(
+                height: 48,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: statuses.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 10),
+                  itemBuilder: (context, index) {
+                    final (value, label) = statuses[index];
+
+                    return CategoryChips(
+                      label: label,
+                      isSelected: selectedStatus == value,
+                      onTap: () {
+                        context.read<OrderBloc>().add(
+                          FilterOrdersStatusEvent(value),
+                        );
+                      },
+                    );
                   },
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 12),
@@ -119,15 +121,10 @@ class _OrdersPageState extends State<OrdersPage> {
                     );
 
                   case OrderFetchStatus.loading:
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return const Center(child: CircularProgressIndicator());
 
                   case OrderFetchStatus.failure:
-                    return _buildError(
-                      context,
-                      state.fetchErrorMessage,
-                    );
+                    return _buildError(context, state.fetchErrorMessage);
 
                   case OrderFetchStatus.success:
                     if (state.visibleOrders.isEmpty) {
@@ -151,11 +148,7 @@ class _OrdersPageState extends State<OrdersPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 48,
-              color: Colors.red,
-            ),
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 12),
             Text(
               message ?? 'Failed to load orders.',
@@ -183,9 +176,7 @@ class _OrdersPageState extends State<OrdersPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            hasNoOrders
-                ? Icons.shopping_bag_outlined
-                : Icons.search_off,
+            hasNoOrders ? Icons.shopping_bag_outlined : Icons.search_off,
             size: 64,
             color: Colors.grey,
           ),
@@ -194,20 +185,13 @@ class _OrdersPageState extends State<OrdersPage> {
             hasNoOrders
                 ? 'You have no orders yet.'
                 : 'No matching orders found.',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           if (!hasNoOrders)
             TextButton(
               onPressed: () {
-                context.read<OrderBloc>().add(
-                  SearchOrdersEvent(''),
-                );
-                context.read<OrderBloc>().add(
-                  FilterOrdersStatusEvent('All'),
-                );
+                context.read<OrderBloc>().add(SearchOrdersEvent(''));
+                context.read<OrderBloc>().add(FilterOrdersStatusEvent('All'));
               },
               child: const Text('Clear filters'),
             ),

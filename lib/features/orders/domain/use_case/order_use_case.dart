@@ -9,8 +9,8 @@ class GetAllOrdersUseCase{
     required this.repository
   });
 
-  Future<List<OrderEntity>?> call() async{
-    return await  repository.getAllOrders();
+  Future<List<OrderEntity>> call(String userId) async{
+    return await repository.getAllOrders(userId);
   }
 }
 

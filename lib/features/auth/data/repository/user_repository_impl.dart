@@ -51,4 +51,14 @@ class UserRepositoryImpl implements UserRepository{
 
   return Left(DatabaseFailure(error.toString()));
 }  }
+
+@override
+Future<Either<Failure, void>> updateUser(UserEntity user) async {
+  try {
+    await localDataSource.updateUser(UserModel.fromEntity(user));
+    return const Right(null);
+  } catch (error) {
+    return Left(DatabaseFailure(error.toString()));
+  }
+}
 }

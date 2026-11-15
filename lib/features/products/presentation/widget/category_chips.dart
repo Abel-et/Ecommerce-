@@ -19,7 +19,9 @@ class CategoryChips extends StatelessWidget {
         duration: Duration(milliseconds: 200),
         padding:  const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration:  BoxDecoration(
-          color : isSelected? Theme.of(context).primaryColor : Colors.grey[100],
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(25),
           border: Border.all(
             color: isSelected? Colors.transparent: Colors.grey[300]!,
@@ -30,7 +32,9 @@ class CategoryChips extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: isSelected? FontWeight.bold :FontWeight(300),
-              color: isSelected? Colors.white :Colors.black87
+              color: isSelected
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),

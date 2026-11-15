@@ -52,4 +52,19 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
       return Left(DatabaseFailure(error.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> updateUser(UserModel user) async {
+    try {
+      await appDatabase.updateUser(
+        id: user.id,
+        name: user.fullName,
+        email: user.email,
+        profileImagePath: user.profileImage?.path,
+      );
+      return const Right(null);
+    } catch (error) {
+      return Left(DatabaseFailure(error.toString()));
+    }
+  }
 }

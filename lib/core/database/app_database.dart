@@ -28,8 +28,9 @@ class AppDatabase {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
       onConfigure: _onConfigure,
     );
   }
@@ -39,7 +40,7 @@ class AppDatabase {
     await db.execute('PRAGMA foreign_keys = ON');
   }
 
-  // formula creating multple tables under one database execution block
+  // formula creating  tables under one database execution block
   Future _createDB(Database db, int version) async {
     // users tables
     await db.execute("""
@@ -49,6 +50,7 @@ class AppDatabase {
       password_hash  TEXT NOT NULL,
       name TEXT NOT NULL,
       created_at TEXT NOT NULL
+      ,profile_image_path TEXT
       )
 """);
 
@@ -88,6 +90,14 @@ await db.execute('''
     FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE RESTRICT
   )
 ''');
+  }
+
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(
+        'ALTER TABLE users ADD COLUMN profile_image_path TEXT',
+      );
+    }
   }
 
 
@@ -144,6 +154,25 @@ await db.execute('''
       whereArgs: [email, password]
     );
     return res.isNotEmpty ? res.first : null;
+  }
+
+  Future<void> updateUser({
+    required String id,
+    required String name,
+    required String email,
+    String? profileImagePath,
+  }) async {
+    final db = await database;
+    await db.update(
+      'users',
+      {
+        'name': name,
+        'email': email,
+        'profile_image_path': profileImagePath,
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
 
@@ -239,13 +268,15 @@ Future <void> createOrder(OrderModel order) async          {
   }
   });
 }
-Future<List<OrderModel>> getAllOrders() async {
+Future<List<OrderModel>> getAllOrders(String userId) async {
   final db = await database;
 
   final orderMaps = await db.query(
     'orders',
-    orderBy: 'created_at DESC',
-  );
+   where: 'user_id = ?',
+   whereArgs: [userId],
+   orderBy: 'created_at DESC',
+ );
 
   if (orderMaps.isEmpty) return [];
 

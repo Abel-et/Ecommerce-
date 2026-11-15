@@ -80,8 +80,10 @@ class ProductCard extends StatelessWidget {
                             context.read<CartBloc>().add(AddToCart(product));
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onPrimary,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
                               vertical: 4,
