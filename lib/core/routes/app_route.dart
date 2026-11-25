@@ -3,6 +3,7 @@ import 'package:ecommerce/features/auth/domain/entities/user_entity.dart';
 import 'package:ecommerce/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:ecommerce/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:ecommerce/features/auth/presentation/pages/profile_page.dart';
+import 'package:ecommerce/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:ecommerce/features/orders/presentation/pages/orders_page.dart';
 import 'package:ecommerce/features/products/domain/entities/product_entity.dart';
 import 'package:ecommerce/features/products/presentation/pages/cart/cart_page.dart';
@@ -10,6 +11,8 @@ import 'package:ecommerce/features/products/presentation/pages/cart/order_succes
 import 'package:ecommerce/features/products/presentation/pages/cart/checkout_page.dart';
 import 'package:ecommerce/features/products/presentation/pages/product_pages/home_page.dart';
 import 'package:ecommerce/features/products/presentation/pages/product_pages/product_detail_page.dart';
+import 'package:ecommerce/features/products/presentation/pages/admin/admin_products_page.dart';
+import 'package:ecommerce/features/products/presentation/pages/admin/product_form_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,6 +29,10 @@ class AppRoute {
   static const String productDetails = 'product-details';
   static const String checkout = 'checkout';
   static const String ordersPage = 'orders_page';
+  static const String onboarding = 'onboarding';
+  static const String adminProducts = 'admin-products';
+  static const String addProduct = 'add-product';
+  static const String editProduct = 'edit-product';
 
   // * Navigator keys
   static final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -72,6 +79,11 @@ class AppRoute {
         builder: (context, state) => const SignUpPage(),
       ),
       GoRoute(
+        path: '/onboarding',
+        name: onboarding,
+        builder: (context, state) => const OnboardingPage(),
+      ),
+      GoRoute(
         path: '/login',
         name: login,
         builder: (context, state) => SingInPage(),
@@ -110,7 +122,7 @@ class AppRoute {
             navigatorKey: cartNavigatorKey,
             routes: [
               GoRoute(
-                path: '/cart', 
+                path: '/cart',
                 name: cart,
                 builder: (context, state) => const CartPage(),
               ),
@@ -121,7 +133,7 @@ class AppRoute {
             navigatorKey: orderNavigatorKey,
             routes: [
               GoRoute(
-                path: '/orders_page', 
+                path: '/orders_page',
                 name: ordersPage,
                 builder: (context, state) => const OrdersPage(),
               ),
@@ -156,6 +168,26 @@ class AppRoute {
         name: orderSuccess,
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const OrderSuccessPage(),
+      ),
+      GoRoute(
+        path: '/admin/products',
+        name: adminProducts,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const AdminProductsPage(),
+      ),
+      GoRoute(
+        path: '/admin/products/add',
+        name: addProduct,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ProductFormPage(),
+      ),
+      GoRoute(
+        path: '/admin/products/edit',
+        name: editProduct,
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          return ProductFormPage(product: state.extra as ProductEntity);
+        },
       ),
     ],
   );

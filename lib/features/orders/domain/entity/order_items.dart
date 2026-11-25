@@ -1,4 +1,4 @@
-
+// when a single product become order item 
 class OrderItems {
   final String id; 
   final String productId;

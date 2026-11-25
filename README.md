@@ -13,6 +13,8 @@ milestone is a production backend built with Node.js and PostgreSQL.
 The application follows the supplied **Flutter E-Commerce App UI/UX
 Flowboard**, which defines the intended journey and screen structure:
 
+![ShopSmart Flutter e-commerce UI/UX flowboard](assets/flutter-ecommerce-ui-ux-flowboard.png)
+
 1. Splash screen
 2. Onboarding screens
 3. Login and account creation

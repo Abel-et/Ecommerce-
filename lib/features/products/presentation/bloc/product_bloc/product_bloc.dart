@@ -41,7 +41,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     Emitter<ProductState> emit,
   ) async {
     emit(Loading());
-    await createProductUseCase(event.product);
+    try {
+      await createProductUseCase(event.product);
+      _allProducts = [..._allProducts, event.product];
+      _emitLoaded(emit);
+    } catch (error) {
+      emit(ProductFailure('Unable to create product: $error'));
+    }
   }
 
   Future<void> _updateProduct(
@@ -49,8 +55,19 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     Emitter<ProductState> emit,
   ) async {
     emit(Loading());
-    // # passing for update product
-    await updateProductUseCase(event.product);
+    try {
+      await updateProductUseCase(event.product);
+      _allProducts = _allProducts
+          .map(
+            (product) => product.productId == event.product.productId
+                ? event.product
+                : product,
+          )
+          .toList();
+      _emitLoaded(emit);
+    } catch (error) {
+      emit(ProductFailure('Unable to update product: $error'));
+    }
   }
 
   Future<void> _deleteProduct(
@@ -58,7 +75,15 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     Emitter<ProductState> emit,
   ) async {
     emit(Loading());
-    await deleteProductUseCase(event.id);
+    try {
+      await deleteProductUseCase(event.id);
+      _allProducts = _allProducts
+          .where((product) => product.productId != event.id)
+          .toList();
+      _emitLoaded(emit);
+    } catch (error) {
+      emit(ProductFailure('Unable to delete product: $error'));
+    }
   }
 
   Future<void> _getAllProducts(
@@ -75,50 +100,44 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     }
   }
 
-
-void _onFilterProductsByCategory(
-  FilterProductsByCategoryEvent event,
-  Emitter<ProductState> emit
-){
-  _selectedCategory = event.category;
-  _emitLoaded(emit);
-}
-  void _onSearchProduct( 
-    SearchedProductEvent event,
-    Emitter<ProductState> emit
-  ) async{
-   
-
-    _searchQuery = event.query;
+  void _onFilterProductsByCategory(
+    FilterProductsByCategoryEvent event,
+    Emitter<ProductState> emit,
+  ) {
+    _selectedCategory = event.category;
     _emitLoaded(emit);
-  
-
   }
 
- 
+  void _onSearchProduct(
+    SearchedProductEvent event,
+    Emitter<ProductState> emit,
+  ) async {
+    _searchQuery = event.query;
+    _emitLoaded(emit);
+  }
 
-  void _emitLoaded(Emitter<ProductState> emit)
-  {
-    final query =  _searchQuery.trim().toLowerCase();
+  void _emitLoaded(Emitter<ProductState> emit) {
+    final query = _searchQuery.trim().toLowerCase();
     final category = _selectedCategory.trim().toLowerCase();
-    final visibleProduct = _allProducts.where((product){
+    final visibleProduct = _allProducts.where((product) {
+      final matchesQuery =
+          query.isEmpty ||
+          product.productName.toLowerCase().contains(query) ||
+          product.productCategory.toLowerCase().contains(query);
 
-
-      final matchesQuery = query.isEmpty ||  product.productName.toLowerCase().contains(query) || 
-      product.productCategory.toLowerCase().contains(query);
-      
-      final matchesCategory = category == 'all' || product.productCategory.trim().toLowerCase() == category;
-      return matchesCategory  && matchesQuery;
+      final matchesCategory =
+          category == 'all' ||
+          product.productCategory.trim().toLowerCase() == category;
+      return matchesCategory && matchesQuery;
     });
 
-    emit( 
+    emit(
       ProductLoaded(
         products: List<ProductEntity>.unmodifiable(_allProducts),
         visibleProducts: List<ProductEntity>.unmodifiable(visibleProduct),
         query: query,
-        selectedCategory: category
-        
-      )
+        selectedCategory: category,
+      ),
     );
   }
 

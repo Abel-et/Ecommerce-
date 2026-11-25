@@ -3,6 +3,7 @@ import 'order_items.dart';
 
 enum OrderStatus {pending, processing, completed}
 
+// by one time order there could be more than one product could be purchased
 class OrderEntity {
   final String id;
   final String userId;

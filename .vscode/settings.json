@@ -1,3 +1,9 @@
 {
-    "cmake.sourceDirectory": "/home/abel/Desktop/ecommerce/linux"
+    "cmake.sourceDirectory": "/home/abel/Desktop/ecommerce/linux",
+    "dart.sdkPath": "/home/abel/development/flutter/bin/cache/dart-sdk",
+    "dart.flutterSdkPath": "/home/abel/development/flutter",
+    "java.jdt.ls.java.home": "/usr/lib/jvm/java-21-openjdk-amd64",
+    "terminal.integrated.env.linux": {
+        "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64"
+    }
 }
